@@ -3,14 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JSON Editor</title>
+  <title>JSON Editor - Template o Caricamento</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-    form {
-      margin-top: 20px;
+    h2, h3 {
+      cursor: pointer;
+    }
+    .toggle-content {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
     }
     label {
       font-weight: bold;
@@ -27,144 +33,58 @@
       padding: 10px 20px;
       margin-top: 10px;
     }
+    .add-btn, .remove-btn {
+      margin-top: 5px;
+      padding: 5px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      cursor: pointer;
+    }
+    .remove-btn {
+      background-color: #dc3545;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Modifica il file JSON</h1>
+  <h1>Editor JSON - Inizia da Template o Carica File</h1>
 
-  <form id="jsonForm">
-    <h2>Script Files</h2>
-    <div id="scriptFiles"></div>
+  <!-- Selezione iniziale: Template vuoto o caricare JSON -->
+  <button id="startWithTemplate">Inizia con Template Vuoto</button>
+  <button id="loadFromFile">Carica JSON</button>
 
-    <h2>Main Section</h2>
-    <label for="svgImage">SVG Image Link:</label>
-    <input type="url" id="svgImage" placeholder="Inserisci il link dell'immagine SVG">
+  <br><br>
 
-    <h3>Journal 1</h3>
-    <label for="journal1Link">Link:</label>
-    <input type="url" id="journal1Link" placeholder="Inserisci il link del Journal 1">
-    <label for="journal1Front">Front Image:</label>
-    <input type="text" id="journal1Front" placeholder="Inserisci il percorso dell'immagine frontale">
-    <label for="journal1Back">Back Image:</label>
-    <input type="url" id="journal1Back" placeholder="Inserisci il link dell'immagine sul retro">
+  <!-- Caricamento file JSON -->
+  <input type="file" id="fileInput" accept=".json" style="display:none;">
+  <br><br>
 
-    <h3>Testo Principale</h3>
-    <label for="mainText">Testo:</label>
-    <textarea id="mainText" rows="4" placeholder="Inserisci il testo principale"></textarea>
+  <form id="jsonForm" style="display:none;">
+    <!-- Script Files Section -->
+    <h2 id="scriptFilesToggle">Script Files</h2>
+    <div id="scriptFiles" class="toggle-content">
+      <div id="scriptFilesContainer"></div>
+      <button type="button" class="add-btn" onclick="addScriptFile()">Aggiungi Script File</button>
+    </div>
 
-    <h2>Sections</h2>
-    <div id="sections"></div>
+    <!-- Main Section -->
+    <h2 id="mainSectionToggle">Main Section</h2>
+    <div id="mainSection" class="toggle-content">
+      <label for="svgImage">SVG Image Link:</label>
+      <input type="url" id="svgImage" placeholder="Inserisci il link dell'immagine SVG">
+    </div>
+
+    <!-- Sections Section -->
+    <h2 id="sectionsToggle">Sections</h2>
+    <div id="sections" class="toggle-content">
+      <div id="sectionsContainer"></div>
+      <button type="button" class="add-btn" onclick="addSection()">Aggiungi Sezione</button>
+    </div>
 
     <button type="button" id="downloadBtn">Scarica JSON Modificato</button>
   </form>
 
-  <script>
-    // Struttura JSON iniziale
-    const jsonData = {
-      "scriptFiles": [
-        { "scriptFile": "scripts/chart.js" },
-        { "scriptFile": "scripts/babylon-setup.js" }
-      ],
-      "mainSection": {
-        "svgImage": { "link": "https://raw.githubusercontent.com/mastroalex/m2m/main/assets/imgs/drawing.svg" },
-        "Journal1": {
-          "link": "https://link.springer.com/article/10.1007/s10237-024-01826-6",
-          "front": "assets/imgs/journal1.png",
-          "back": "https://media.springernature.com/w316/springer-static/cover-hires/journal/10237?as=webp"
-        },
-        "Text": "Lorem Ipsum is simply dummy text..."
-      },
-      "sections": [
-        {
-          "id": "section-1",
-          "title": "Tissue damage",
-          "subtitle": "Modeling of the inflammatory response",
-          "contents": [
-            {
-              "text": "In silico models that integrates nonlinear mechanics...",
-              "image": "https://ars.els-cdn.com/content/image/1-s2.0-S0010482523002767-gr1.jpg",
-              "isImage": true
-            }
-          ]
-        }
-      ]
-    };
-
-    // Funzione per popolare i campi editabili con il JSON
-    function populateFields(data) {
-      // Popola scriptFiles
-      const scriptFilesDiv = document.getElementById('scriptFiles');
-      data.scriptFiles.forEach((script, index) => {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = `scriptFile-${index}`;
-        input.value = script.scriptFile;
-        input.placeholder = `Percorso script ${index + 1}`;
-        scriptFilesDiv.appendChild(input);
-      });
-
-      // Popola mainSection
-      document.getElementById('svgImage').value = data.mainSection.svgImage.link;
-      document.getElementById('journal1Link').value = data.mainSection.Journal1.link;
-      document.getElementById('journal1Front').value = data.mainSection.Journal1.front;
-      document.getElementById('journal1Back').value = data.mainSection.Journal1.back;
-      document.getElementById('mainText').value = data.mainSection.Text;
-
-      // Popola sections
-      const sectionsDiv = document.getElementById('sections');
-      data.sections.forEach((section, index) => {
-        const sectionDiv = document.createElement('div');
-        sectionDiv.innerHTML = `
-          <h3>${section.title}</h3>
-          <label>Title:</label>
-          <input type="text" id="sectionTitle-${index}" value="${section.title}">
-          <label>Subtitle:</label>
-          <input type="text" id="sectionSubtitle-${index}" value="${section.subtitle}">
-        `;
-        sectionsDiv.appendChild(sectionDiv);
-      });
-    }
-
-    // Funzione per scaricare il JSON aggiornato
-    function downloadUpdatedJSON() {
-      const updatedJson = {
-        scriptFiles: jsonData.scriptFiles.map((_, index) => ({
-          scriptFile: document.getElementById(`scriptFile-${index}`).value
-        })),
-        mainSection: {
-          svgImage: { link: document.getElementById('svgImage').value },
-          Journal1: {
-            link: document.getElementById('journal1Link').value,
-            front: document.getElementById('journal1Front').value,
-            back: document.getElementById('journal1Back').value
-          },
-          Text: document.getElementById('mainText').value
-        },
-        sections: jsonData.sections.map((section, index) => ({
-          id: section.id,
-          title: document.getElementById(`sectionTitle-${index}`).value,
-          subtitle: document.getElementById(`sectionSubtitle-${index}`).value,
-          contents: section.contents
-        }))
-      };
-
-      const blob = new Blob([JSON.stringify(updatedJson, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'updated_data.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-
-    // Popola i campi iniziali
-    populateFields(jsonData);
-
-    // Gestione del click sul bottone di download
-    document.getElementById('downloadBtn').addEventListener('click', downloadUpdatedJSON);
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
