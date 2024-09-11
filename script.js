@@ -10,6 +10,7 @@ let jsonData = {
     document.getElementById('startWithTemplate').style.display = 'none';
     document.getElementById('loadFromFile').style.display = 'none';
     populateFields(jsonData); // Popola i campi iniziali
+    setupToggleButtons(); // Imposta i pulsanti per il toggle
   });
   
   // Carica JSON da file
@@ -28,6 +29,7 @@ let jsonData = {
         jsonData = JSON.parse(e.target.result);
         document.getElementById('jsonForm').style.display = 'block';
         populateFields(jsonData); // Popola i campi con i dati caricati
+        setupToggleButtons(); // Imposta i pulsanti per il toggle
       };
       reader.readAsText(file);
     }
@@ -58,16 +60,18 @@ let jsonData = {
     data.sections.forEach((section, index) => {
       const sectionDiv = document.createElement('div');
       sectionDiv.innerHTML = `
-        <h3>Sezione ${index + 1}</h3>
-        <label>ID:</label>
-        <input type="text" id="sectionId-${index}" value="${section.id}" placeholder="ID sezione">
-        <label>Title:</label>
-        <input type="text" id="sectionTitle-${index}" value="${section.title}" placeholder="Titolo sezione">
-        <label>Subtitle:</label>
-        <input type="text" id="sectionSubtitle-${index}" value="${section.subtitle}" placeholder="Sottotitolo sezione">
-        <div id="contentsContainer-${index}"></div>
-        <button type="button" class="add-btn" onclick="addContent(${index})">Aggiungi Contenuto</button>
-        <button type="button" class="remove-btn" onclick="removeSection(${index})">Rimuovi Sezione</button>
+        <h3 class="toggle-section" id="sectionToggle-${index}">Sezione ${index + 1}</h3>
+        <div id="sectionContent-${index}" class="section-content">
+          <label>ID:</label>
+          <input type="text" id="sectionId-${index}" value="${section.id}" placeholder="ID sezione">
+          <label>Title:</label>
+          <input type="text" id="sectionTitle-${index}" value="${section.title}" placeholder="Titolo sezione">
+          <label>Subtitle:</label>
+          <input type="text" id="sectionSubtitle-${index}" value="${section.subtitle}" placeholder="Sottotitolo sezione">
+          <div id="contentsContainer-${index}"></div>
+          <button type="button" class="add-btn" onclick="addContent(${index})">Aggiungi Contenuto</button>
+          <button type="button" class="remove-btn" onclick="removeSection(${index})">Rimuovi Sezione</button>
+        </div>
       `;
       sectionsContainer.appendChild(sectionDiv);
   
@@ -93,35 +97,57 @@ let jsonData = {
     });
   }
   
+  // Imposta i pulsanti di toggle per le sezioni
+  function setupToggleButtons() {
+    const toggles = document.querySelectorAll('.toggle-section');
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const sectionId = this.id.replace('sectionToggle-', 'sectionContent-');
+        const sectionContent = document.getElementById(sectionId);
+        if (sectionContent.style.display === 'none' || sectionContent.style.display === '') {
+          sectionContent.style.display = 'block';
+        } else {
+          sectionContent.style.display = 'none';
+        }
+      });
+    });
+  }
+  
   // Funzioni per aggiungere e rimuovere campi dinamicamente
   function addScriptFile() {
     jsonData.scriptFiles.push({ scriptFile: "" });
     populateFields(jsonData); // Ricarica i campi
+    setupToggleButtons(); // Riassegna i pulsanti di toggle
   }
   
   function removeScriptFile(index) {
     jsonData.scriptFiles.splice(index, 1);
     populateFields(jsonData); // Ricarica i campi
+    setupToggleButtons(); // Riassegna i pulsanti di toggle
   }
   
   function addSection() {
     jsonData.sections.push({ id: "", title: "", subtitle: "", contents: [] });
     populateFields(jsonData); // Ricarica i campi
+    setupToggleButtons(); // Riassegna i pulsanti di toggle
   }
   
   function removeSection(index) {
     jsonData.sections.splice(index, 1);
     populateFields(jsonData); // Ricarica i campi
+    setupToggleButtons(); // Riassegna i pulsanti di toggle
   }
   
   function addContent(sectionIndex) {
     jsonData.sections[sectionIndex].contents.push({ text: "", image: "", isImage: false, canvasType: "", contentFunction: "" });
     populateFields(jsonData); // Ricarica i campi
+    setupToggleButtons(); // Riassegna i pulsanti di toggle
   }
   
   function removeContent(sectionIndex, contentIndex) {
     jsonData.sections[sectionIndex].contents.splice(contentIndex, 1);
     populateFields(jsonData); // Ricarica i campi
+    setupToggleButtons(); // Riassegna i pulsanti di toggle
   }
   
   // Scarica il JSON aggiornato
