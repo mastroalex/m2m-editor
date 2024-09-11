@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Editor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+    }
+    input[type="file"] {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Carica e Modifica JSON</h1>
+
+  <input type="file" id="fileInput" accept=".json">
+  <br>
+  <textarea id="jsonEditor" placeholder="Il contenuto del file JSON apparirà qui..."></textarea>
+  <br>
+  <button id="downloadBtn">Scarica JSON Modificato</button>
+
+  <script>
+    let jsonData = null;
+
+    // Carica il file JSON
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          jsonData = JSON.parse(e.target.result);
+          document.getElementById('jsonEditor').value = JSON.stringify(jsonData, null, 2);
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    // Scarica il file JSON modificato
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      const updatedJson = document.getElementById('jsonEditor').value;
+      try {
+        const blob = new Blob([updatedJson], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'updated_data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (e) {
+        alert('Errore nella generazione del file JSON. Verifica il formato.');
+      }
+    });
+  </script>
+
+</body>
+</html>
