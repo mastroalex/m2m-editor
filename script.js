@@ -4,22 +4,22 @@ let jsonData = {
     sections: []
   };
   
-  // Funzione per iniziare con template vuoto
+  // Inizia con il template vuoto
   document.getElementById('startWithTemplate').addEventListener('click', function() {
     document.getElementById('jsonForm').style.display = 'block';
     document.getElementById('startWithTemplate').style.display = 'none';
     document.getElementById('loadFromFile').style.display = 'none';
-    populateFields(jsonData);
+    populateFields(jsonData); // Popola i campi iniziali
   });
   
-  // Funzione per caricare JSON da file
+  // Carica JSON da file
   document.getElementById('loadFromFile').addEventListener('click', function() {
     document.getElementById('fileInput').style.display = 'block';
     document.getElementById('startWithTemplate').style.display = 'none';
     document.getElementById('loadFromFile').style.display = 'none';
   });
   
-  // Caricamento file JSON
+  // Caricamento del file JSON
   document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (file) {
@@ -27,7 +27,7 @@ let jsonData = {
       reader.onload = function(e) {
         jsonData = JSON.parse(e.target.result);
         document.getElementById('jsonForm').style.display = 'block';
-        populateFields(jsonData);
+        populateFields(jsonData); // Popola i campi con i dati caricati
       };
       reader.readAsText(file);
     }
@@ -35,9 +35,11 @@ let jsonData = {
   
   // Funzione per popolare i campi editabili con il JSON
   function populateFields(data) {
-    // Popola scriptFiles
+    // Pulizia contenuto precedente
     const scriptFilesContainer = document.getElementById('scriptFilesContainer');
-    scriptFilesContainer.innerHTML = '';
+    scriptFilesContainer.innerHTML = ''; 
+  
+    // Popola scriptFiles
     data.scriptFiles.forEach((script, index) => {
       const scriptDiv = document.createElement('div');
       scriptDiv.innerHTML = `
@@ -52,7 +54,7 @@ let jsonData = {
   
     // Popola sections
     const sectionsContainer = document.getElementById('sectionsContainer');
-    sectionsContainer.innerHTML = '';
+    sectionsContainer.innerHTML = ''; 
     data.sections.forEach((section, index) => {
       const sectionDiv = document.createElement('div');
       sectionDiv.innerHTML = `
@@ -91,34 +93,35 @@ let jsonData = {
     });
   }
   
+  // Funzioni per aggiungere e rimuovere campi dinamicamente
   function addScriptFile() {
     jsonData.scriptFiles.push({ scriptFile: "" });
-    populateFields(jsonData);
+    populateFields(jsonData); // Ricarica i campi
   }
   
   function removeScriptFile(index) {
     jsonData.scriptFiles.splice(index, 1);
-    populateFields(jsonData);
+    populateFields(jsonData); // Ricarica i campi
   }
   
   function addSection() {
     jsonData.sections.push({ id: "", title: "", subtitle: "", contents: [] });
-    populateFields(jsonData);
+    populateFields(jsonData); // Ricarica i campi
   }
   
   function removeSection(index) {
     jsonData.sections.splice(index, 1);
-    populateFields(jsonData);
+    populateFields(jsonData); // Ricarica i campi
   }
   
   function addContent(sectionIndex) {
     jsonData.sections[sectionIndex].contents.push({ text: "", image: "", isImage: false, canvasType: "", contentFunction: "" });
-    populateFields(jsonData);
+    populateFields(jsonData); // Ricarica i campi
   }
   
   function removeContent(sectionIndex, contentIndex) {
     jsonData.sections[sectionIndex].contents.splice(contentIndex, 1);
-    populateFields(jsonData);
+    populateFields(jsonData); // Ricarica i campi
   }
   
   // Scarica il JSON aggiornato
