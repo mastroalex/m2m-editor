@@ -70,6 +70,7 @@ let jsonData = {
           <input type="text" id="sectionSubtitle-${index}" value="${section.subtitle}" placeholder="Sottotitolo sezione">
           <div id="contentsContainer-${index}" class="content-container"></div>
           <button type="button" class="add-btn" onclick="addContent(${index})">Aggiungi Contenuto</button>
+          <br>
           <button type="button" class="remove-btn" onclick="removeSection(${index})">Rimuovi Sezione</button>
         </div>
       `;
