@@ -80,6 +80,7 @@ let jsonData = {
       const contentsContainer = document.getElementById(`contentsContainer-${index}`);
       section.contents.forEach((content, contentIndex) => {
         const contentDiv = document.createElement('div');
+        contentDiv.classList.add('content-block');
         contentDiv.innerHTML = `
           <label>Text:</label>
           <input type="text" id="contentText-${index}-${contentIndex}" value="${content.text}" placeholder="Testo contenuto">
