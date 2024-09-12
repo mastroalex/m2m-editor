@@ -119,6 +119,25 @@ let jsonData = {
     populateFields(jsonData); // Refresh the fields
     setupToggleButtons(); // Re-apply toggle functionality
   }
+
+// Function to add a new link field in the content
+function addLink(sectionIndex, contentIndex) {
+  const content = jsonData.sections[sectionIndex].contents[contentIndex];
+  if (!content.links) {
+    content.links = [];
+  }
+  content.links.push(""); // Add an empty link
+  populateFields(jsonData); // Refresh the fields to show the new link
+  setupToggleButtons(); // Re-apply toggle functionality
+}
+
+// Function to remove a specific link
+function removeLink(sectionIndex, contentIndex, linkIndex) {
+  jsonData.sections[sectionIndex].contents[contentIndex].links.splice(linkIndex, 1); // Remove the link
+  populateFields(jsonData); // Refresh the fields
+  setupToggleButtons(); // Re-apply toggle functionality
+}
+
   // Imposta i pulsanti di toggle per le sezioni
   function setupToggleButtons() {
     const toggles = document.querySelectorAll('.toggle-section');
