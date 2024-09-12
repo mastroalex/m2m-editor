@@ -35,7 +35,6 @@ let jsonData = {
     }
   });
   
-  // Funzione per popolare i campi editabili con il JSON
   function populateFields(data) {
     // Clear previous content
     const scriptFilesContainer = document.getElementById('scriptFilesContainer');
@@ -58,7 +57,6 @@ let jsonData = {
     const sectionsContainer = document.getElementById('sectionsContainer');
     sectionsContainer.innerHTML = ''; 
     data.sections.forEach((section, index) => {
-      // Automatically generate the id as "section-X"
       const sectionId = `section-${index + 1}`;
       section.id = sectionId;
   
@@ -85,17 +83,29 @@ let jsonData = {
       section.contents.forEach((content, contentIndex) => {
         const contentDiv = document.createElement('div');
         contentDiv.classList.add('content-block');
+        
+        // Use a function to toggle visibility based on isImage checkbox
+        const isImageChecked = content.isImage !== undefined ? content.isImage : true;
+        const displayCanvasFields = isImageChecked ? 'none' : 'block';
+  
         contentDiv.innerHTML = `
           <label>Text:</label>
           <input type="text" id="contentText-${index}-${contentIndex}" value="${content.text}" placeholder="Testo contenuto">
           <label>Image:</label>
           <input type="text" id="contentImage-${index}-${contentIndex}" value="${content.image || ''}" placeholder="Link immagine">
           <label>isImage:</label>
-          <input type="checkbox" id="contentIsImage-${index}-${contentIndex}" ${content.isImage ? 'checked' : ''}>
-          <label>Canvas Type:</label>
-          <input type="text" id="contentCanvasType-${index}-${contentIndex}" value="${content.canvasType || ''}" placeholder="Tipo di canvas">
-          <label>Content Function:</label>
-          <input type="text" id="contentFunction-${index}-${contentIndex}" value="${content.contentFunction || ''}" placeholder="Funzione del contenuto">
+          <input type="checkbox" id="contentIsImage-${index}-${contentIndex}" ${isImageChecked ? 'checked' : ''} onchange="toggleCanvasFields(${index}, ${contentIndex})">
+          
+          <div id="canvasFields-${index}-${contentIndex}" style="display: ${displayCanvasFields};">
+            <label>Canvas Type:</label>
+            <select id="contentCanvasType-${index}-${contentIndex}">
+              <option value="chart" ${content.canvasType === 'chart' ? 'selected' : ''}>Chart</option>
+              <option value="babylon" ${content.canvasType === 'babylon' ? 'selected' : ''}>Babylon</option>
+            </select>
+            <label>Content Function:</label>
+            <input type="text" id="contentFunction-${index}-${contentIndex}" value="${content.contentFunction || ''}" placeholder="Funzione del contenuto">
+          </div>
+  
           <div id="linksContainer-${index}-${contentIndex}" class="links-container">
             <label>Links:</label>
             ${content.links ? content.links.map((link, linkIndex) => `
@@ -109,6 +119,18 @@ let jsonData = {
         contentsContainer.appendChild(contentDiv);
       });
     });
+  }
+  
+  // Function to toggle the canvas type and content function fields
+  function toggleCanvasFields(sectionIndex, contentIndex) {
+    const isImageCheckbox = document.getElementById(`contentIsImage-${sectionIndex}-${contentIndex}`);
+    const canvasFields = document.getElementById(`canvasFields-${sectionIndex}-${contentIndex}`);
+    
+    if (isImageCheckbox.checked) {
+      canvasFields.style.display = 'none'; // Hide canvas fields if it's an image
+    } else {
+      canvasFields.style.display = 'block'; // Show canvas fields if it's not an image
+    }
   }
   
   // Automatically add section with ID generation
