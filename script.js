@@ -36,6 +36,7 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 });
 
 // Function to populate fields and retain user input
+// Function to populate fields and retain user input
 function populateFields(data) {
   const scriptFilesContainer = document.getElementById('scriptFilesContainer');
   scriptFilesContainer.innerHTML = ''; 
@@ -49,7 +50,7 @@ function populateFields(data) {
       `;
       scriptFilesContainer.appendChild(scriptDiv);
 
-      // Add event listener to update script file input in real time
+      // Add event listener to update script file input in real-time
       document.getElementById(`scriptFile-${index}`).addEventListener('input', (e) => {
           jsonData.scriptFiles[index].scriptFile = e.target.value;
       });
@@ -133,7 +134,7 @@ function populateFields(data) {
           `;
           contentsContainer.appendChild(contentDiv);
 
-          // Add event listeners to update jsonData in real-time
+          // Add event listeners to update jsonData in real-time for content and links
           document.getElementById(`contentText-${index}-${contentIndex}`).addEventListener('input', (e) => {
               jsonData.sections[index].contents[contentIndex].text = e.target.value;
           });
@@ -148,6 +149,13 @@ function populateFields(data) {
           });
           document.getElementById(`contentFunction-${index}-${contentIndex}`).addEventListener('input', (e) => {
               jsonData.sections[index].contents[contentIndex].contentFunction = e.target.value;
+          });
+
+          // Add listeners for each link field to update jsonData
+          content.links.forEach((link, linkIndex) => {
+              document.getElementById(`contentLink-${index}-${contentIndex}-${linkIndex}`).addEventListener('input', (e) => {
+                  jsonData.sections[index].contents[contentIndex].links[linkIndex] = e.target.value;
+              });
           });
       });
   });
@@ -226,6 +234,19 @@ function setupToggleButtons() {
   });
 }
 
+function addScriptFile() {
+  jsonData.scriptFiles.push({ scriptFile: "" }); // Add a new script file entry
+  populateFields(jsonData); // Re-populate the fields
+  setupToggleButtons(); // Re-apply toggle functionality
+}
+
+// Function to remove a script file
+function removeScriptFile(index) {
+  jsonData.scriptFiles.splice(index, 1); // Remove the script file from jsonData
+  populateFields(jsonData); // Re-populate the fields
+  setupToggleButtons(); // Re-apply toggle functionality
+}
+
 // Download updated JSON
 document.getElementById('downloadBtn').addEventListener('click', function () {
   const updatedJson = {
@@ -249,6 +270,8 @@ document.getElementById('downloadBtn').addEventListener('click', function () {
           }))
       }))
   };
+
+
 
   const blob = new Blob([JSON.stringify(updatedJson, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
