@@ -115,6 +115,7 @@ function populateFields(data) {
               <div id="canvasFields-${index}-${contentIndex}" style="display: ${displayCanvasFields};">
                   <label>Canvas Type:</label>
                   <select id="contentCanvasType-${index}-${contentIndex}">
+                      <option value="chart" ${content.canvasType === 'none' ? 'selected' : ''}>None</option>
                       <option value="chart" ${content.canvasType === 'chart' ? 'selected' : ''}>Chart</option>
                       <option value="babylon" ${content.canvasType === 'babylon' ? 'selected' : ''}>Babylon</option>
                   </select>
