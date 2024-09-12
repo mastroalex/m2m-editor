@@ -101,6 +101,73 @@ function populateFields(data) {
     });
 }
 
+// Save all form values into jsonData before adding new elements
+function saveFormValues() {
+    // Save script files
+    jsonData.scriptFiles.forEach((_, index) => {
+        const scriptFileInput = document.getElementById(`scriptFile-${index}`);
+        if (scriptFileInput) {
+            jsonData.scriptFiles[index].scriptFile = scriptFileInput.value;
+        }
+    });
+
+    // Save mainSection
+    const svgImageInput = document.getElementById('svgImage');
+    if (svgImageInput) {
+        jsonData.mainSection.svgImage.link = svgImageInput.value;
+    }
+
+    // Save sections, contents, and links
+    jsonData.sections.forEach((section, sectionIndex) => {
+        const sectionTitleInput = document.getElementById(`sectionTitle-${sectionIndex}`);
+        const sectionSubtitleInput = document.getElementById(`sectionSubtitle-${sectionIndex}`);
+
+        if (sectionTitleInput) {
+            jsonData.sections[sectionIndex].title = sectionTitleInput.value;
+        }
+        if (sectionSubtitleInput) {
+            jsonData.sections[sectionIndex].subtitle = sectionSubtitleInput.value;
+        }
+
+        // Save content fields
+        jsonData.sections[sectionIndex].contents.forEach((content, contentIndex) => {
+            const contentTextInput = document.getElementById(`contentText-${sectionIndex}-${contentIndex}`);
+            const contentImageInput = document.getElementById(`contentImage-${sectionIndex}-${contentIndex}`);
+            const contentIsImageCheckbox = document.getElementById(`contentIsImage-${sectionIndex}-${contentIndex}`);
+            const contentCanvasTypeInput = document.getElementById(`contentCanvasType-${sectionIndex}-${contentIndex}`);
+            const contentFunctionInput = document.getElementById(`contentFunction-${sectionIndex}-${contentIndex}`);
+
+            if (contentTextInput) {
+                jsonData.sections[sectionIndex].contents[contentIndex].text = contentTextInput.value;
+            }
+            if (contentImageInput) {
+                jsonData.sections[sectionIndex].contents[contentIndex].image = contentImageInput.value;
+            }
+            if (contentIsImageCheckbox) {
+                jsonData.sections[sectionIndex].contents[contentIndex].isImage = contentIsImageCheckbox.checked;
+            }
+            if (contentCanvasTypeInput) {
+                jsonData.sections[sectionIndex].contents[contentIndex].canvasType = contentCanvasTypeInput.value;
+            }
+            if (contentFunctionInput) {
+                jsonData.sections[sectionIndex].contents[contentIndex].contentFunction = contentFunctionInput.value;
+            }
+
+            // Save link fields
+            jsonData.sections[sectionIndex].contents[contentIndex].links.forEach((link, linkIndex) => {
+                const linkNomeInput = document.getElementById(`linkNome-${sectionIndex}-${contentIndex}-${linkIndex}`);
+                const linkUrlInput = document.getElementById(`linkUrl-${sectionIndex}-${contentIndex}-${linkIndex}`);
+
+                if (linkNomeInput) {
+                    jsonData.sections[sectionIndex].contents[contentIndex].links[linkIndex].nome = linkNomeInput.value;
+                }
+                if (linkUrlInput) {
+                    jsonData.sections[sectionIndex].contents[contentIndex].links[linkIndex].url = linkUrlInput.value;
+                }
+            });
+        });
+    });
+}
 // Toggle canvas fields based on the isImage checkbox
 function toggleCanvasFields(sectionIndex, contentIndex) {
   const isImageCheckbox = document.getElementById(`contentIsImage-${sectionIndex}-${contentIndex}`);
@@ -116,6 +183,8 @@ function toggleCanvasFields(sectionIndex, contentIndex) {
 
 // Add a new section
 function addSection() {
+  // Save all current form values before adding the link
+  saveFormValues();
   const newSectionIndex = jsonData.sections.length;
   const newSectionId = `section-${newSectionIndex + 1}`; // Generate new ID as "section-X"
   jsonData.sections.push({ id: newSectionId, title: "", subtitle: "", contents: [] });
@@ -125,6 +194,8 @@ function addSection() {
 
 // Add a new content item to the section
 function addContent(sectionIndex) {
+    // Save all current form values before adding the link
+  saveFormValues();
   jsonData.sections[sectionIndex].contents.push({ text: "", image: "", isImage: true, canvasType: "", contentFunction: "", links: [] });
   populateFields(jsonData); // Re-populate the fields
   setupToggleButtons(); // Re-apply toggle functionality
@@ -132,6 +203,8 @@ function addContent(sectionIndex) {
 
 // Remove a section
 function removeSection(index) {
+    // Save all current form values before adding the link
+  saveFormValues();
   jsonData.sections.splice(index, 1);
   populateFields(jsonData); // Re-populate the fields
   setupToggleButtons(); // Re-apply toggle functionality
@@ -139,6 +212,8 @@ function removeSection(index) {
 
 // Remove content from a section
 function removeContent(sectionIndex, contentIndex) {
+    // Save all current form values before adding the link
+  saveFormValues();
   jsonData.sections[sectionIndex].contents.splice(contentIndex, 1);
   populateFields(jsonData); // Re-populate the fields
   setupToggleButtons(); // Re-apply toggle functionality
@@ -146,6 +221,8 @@ function removeContent(sectionIndex, contentIndex) {
 
 // Add a link field to content
 function addLink(sectionIndex, contentIndex) {
+    // Save all current form values before adding the link
+  saveFormValues();
     const content = jsonData.sections[sectionIndex].contents[contentIndex];
     
     // Add a new object with `nome` and `url`
@@ -157,8 +234,9 @@ function addLink(sectionIndex, contentIndex) {
 }
 
 // Remove a link
-function removeLink(sectionIndex, contentIndex, linkIndex) {
-    jsonData.sections[sectionIndex].contents[contentIndex].links.splice(linkIndex, 1); // Remove the link
+function removeLink(sectionIndex, contentIndex, linkIndex) {// Save all current form values before adding the link
+    saveFormValues();
+        jsonData.sections[sectionIndex].contents[contentIndex].links.splice(linkIndex, 1); // Remove the link
     populateFields(jsonData); // Re-populate the fields
     setupToggleButtons(); // Re-apply toggle functionality
 }
@@ -180,6 +258,8 @@ function setupToggleButtons() {
 }
 
 function addScriptFile() {
+// Save all current form values before adding the link
+saveFormValues();
   jsonData.scriptFiles.push({ scriptFile: "" }); // Add a new script file entry
   populateFields(jsonData); // Re-populate the fields
   setupToggleButtons(); // Re-apply toggle functionality
@@ -187,6 +267,8 @@ function addScriptFile() {
 
 // Function to remove a script file
 function removeScriptFile(index) {
+    // Save all current form values before adding the link
+  saveFormValues();
   jsonData.scriptFiles.splice(index, 1); // Remove the script file from jsonData
   populateFields(jsonData); // Re-populate the fields
   setupToggleButtons(); // Re-apply toggle functionality
