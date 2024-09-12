@@ -37,11 +37,11 @@ let jsonData = {
   
   // Funzione per popolare i campi editabili con il JSON
   function populateFields(data) {
-    // Pulizia contenuto precedente
+    // Clear previous content
     const scriptFilesContainer = document.getElementById('scriptFilesContainer');
     scriptFilesContainer.innerHTML = ''; 
   
-    // Popola scriptFiles
+    // Populate scriptFiles
     data.scriptFiles.forEach((script, index) => {
       const scriptDiv = document.createElement('div');
       scriptDiv.innerHTML = `
@@ -51,19 +51,23 @@ let jsonData = {
       scriptFilesContainer.appendChild(scriptDiv);
     });
   
-    // Popola mainSection
+    // Populate mainSection
     document.getElementById('svgImage').value = data.mainSection.svgImage.link;
   
-    // Popola sections
+    // Populate sections
     const sectionsContainer = document.getElementById('sectionsContainer');
     sectionsContainer.innerHTML = ''; 
     data.sections.forEach((section, index) => {
+      // Automatically generate the id as "section-X"
+      const sectionId = `section-${index + 1}`;
+      section.id = sectionId;
+  
       const sectionDiv = document.createElement('div');
       sectionDiv.innerHTML = `
         <h3 class="toggle-section" id="sectionToggle-${index}">Sezione ${index + 1}</h3>
         <div id="sectionContent-${index}" class="section-content">
           <label>ID:</label>
-          <input type="text" id="sectionId-${index}" value="${section.id}" placeholder="ID sezione">
+          <input type="text" id="sectionId-${index}" value="${section.id}" readonly>
           <label>Title:</label>
           <input type="text" id="sectionTitle-${index}" value="${section.title}" placeholder="Titolo sezione">
           <label>Subtitle:</label>
@@ -76,10 +80,11 @@ let jsonData = {
       `;
       sectionsContainer.appendChild(sectionDiv);
   
-      // Popola contenuti della sezione
+      // Populate contents of the section
       const contentsContainer = document.getElementById(`contentsContainer-${index}`);
       section.contents.forEach((content, contentIndex) => {
         const contentDiv = document.createElement('div');
+        contentDiv.classList.add('content-block');
         contentDiv.innerHTML = `
           <label>Text:</label>
           <input type="text" id="contentText-${index}-${contentIndex}" value="${content.text}" placeholder="Testo contenuto">
@@ -91,14 +96,29 @@ let jsonData = {
           <input type="text" id="contentCanvasType-${index}-${contentIndex}" value="${content.canvasType || ''}" placeholder="Tipo di canvas">
           <label>Content Function:</label>
           <input type="text" id="contentFunction-${index}-${contentIndex}" value="${content.contentFunction || ''}" placeholder="Funzione del contenuto">
+          <div id="linksContainer-${index}-${contentIndex}" class="links-container">
+            <label>Links:</label>
+            ${content.links ? content.links.map((link, linkIndex) => `
+              <input type="text" class="contentLink" id="contentLink-${index}-${contentIndex}-${linkIndex}" value="${link}" placeholder="Inserisci il link">
+              <button type="button" class="remove-btn" onclick="removeLink(${index}, ${contentIndex}, ${linkIndex})">Rimuovi Link</button>
+            `).join('') : ''}
+          </div>
+          <button type="button" class="add-btn" onclick="addLink(${index}, ${contentIndex})">Aggiungi Link</button>
           <button type="button" class="remove-btn" onclick="removeContent(${index}, ${contentIndex})">Rimuovi Contenuto</button>
         `;
-        contentDiv.classList.add('content-block');
         contentsContainer.appendChild(contentDiv);
       });
     });
   }
   
+  // Automatically add section with ID generation
+  function addSection() {
+    const newSectionIndex = jsonData.sections.length;
+    const newSectionId = `section-${newSectionIndex + 1}`; // Generate "section-X"
+    jsonData.sections.push({ id: newSectionId, title: "", subtitle: "", contents: [] });
+    populateFields(jsonData); // Refresh the fields
+    setupToggleButtons(); // Re-apply toggle functionality
+  }
   // Imposta i pulsanti di toggle per le sezioni
   function setupToggleButtons() {
     const toggles = document.querySelectorAll('.toggle-section');
