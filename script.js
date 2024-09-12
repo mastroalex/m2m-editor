@@ -276,36 +276,40 @@ function removeScriptFile(index) {
 
 // Download updated JSON
 document.getElementById('downloadBtn').addEventListener('click', function () {
-  const updatedJson = {
-      scriptFiles: jsonData.scriptFiles.map((_, index) => ({
-          scriptFile: document.getElementById(`scriptFile-${index}`).value
-      })),
-      mainSection: {
-          svgImage: { link: document.getElementById('svgImage').value }
-      },
-      sections: jsonData.sections.map((section, index) => ({
-          id: document.getElementById(`sectionId-${index}`).value,
-          title: document.getElementById(`sectionTitle-${index}`).value,
-          subtitle: document.getElementById(`sectionSubtitle-${index}`).value,
-          contents: section.contents.map((content, contentIndex) => ({
-              text: document.getElementById(`contentText-${index}-${contentIndex}`).value,
-              image: document.getElementById(`contentImage-${index}-${contentIndex}`).value,
-              isImage: document.getElementById(`contentIsImage-${index}-${contentIndex}`).checked,
-              canvasType: document.getElementById(`contentCanvasType-${index}-${contentIndex}`).value,
-              contentFunction: document.getElementById(`contentFunction-${index}-${contentIndex}`).value,
-              links: content.links.map((_, linkIndex) => document.getElementById(`contentLink-${index}-${contentIndex}-${linkIndex}`).value)
-          }))
-      }))
-  };
+    // First, save the form values to jsonData to ensure all inputs are captured
+    saveFormValues();
 
+    const updatedJson = {
+        scriptFiles: jsonData.scriptFiles.map((_, index) => ({
+            scriptFile: jsonData.scriptFiles[index].scriptFile // Directly from jsonData
+        })),
+        mainSection: {
+            svgImage: { link: jsonData.mainSection.svgImage.link } // Directly from jsonData
+        },
+        sections: jsonData.sections.map((section, index) => ({
+            id: section.id, // Directly from jsonData
+            title: section.title, // Directly from jsonData
+            subtitle: section.subtitle, // Directly from jsonData
+            contents: section.contents.map((content, contentIndex) => ({
+                text: content.text, // Directly from jsonData
+                image: content.image, // Directly from jsonData
+                isImage: content.isImage, // Directly from jsonData
+                canvasType: content.canvasType, // Directly from jsonData
+                contentFunction: content.contentFunction, // Directly from jsonData
+                links: content.links.map(link => ({
+                    nome: link.nome, // Directly from jsonData
+                    url: link.url  // Directly from jsonData
+                }))
+            }))
+        }))
+    };
 
-
-  const blob = new Blob([JSON.stringify(updatedJson, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'updated_data.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+    const blob = new Blob([JSON.stringify(updatedJson, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'updated_data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 });
